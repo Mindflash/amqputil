@@ -1,0 +1,19 @@
+{
+	"name":"amqpUtil",
+	"version":"0.0.1",
+	"description":"A thin wrapper around the amqp node moddule",
+	"main":"index.js",
+	"dependencies":{
+		"amqp":"~0.1.4"
+	},
+	"devDependencies":{},
+	"scripts":{
+		"test":"echo \"Error: no test specified\" && exit 1"
+	},
+	"repository":{
+		"type":"git",
+		"url":"git@github.com:Mindflash/amqpUtil.git"
+	},
+	"author":"Mindflash",
+	"license":"X11"
+}
