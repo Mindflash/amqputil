@@ -8,16 +8,18 @@ function log(msg) {
 }
 
 var conns = [];
-exports.connect = function (url, name, callback, enablePublishCallback) {
+exports.connect = function (url, name, callback) {
 	var conn = conns[url] = (conns[url] || amqp.createConnection({url: url}));
 
-	if (conn.isReady) {
-		connected(conn, name, callback, enablePublishCallback);
-	} else {
-		conn.addListener('ready', function () {
-			conn.isReady = true;
-			connected(conn, name, callback, enablePublishCallback);
-		});
+	if (conn.isReady)
+		connected(conn, name, callback);
+	else
+		conn.addListener('ready', readyListener);
+
+	function readyListener() {
+		conn.removeListener('ready', readyListener);
+		conn.isReady = true;
+		connected(conn, name, callback);
 	}
 };
 
@@ -26,12 +28,13 @@ exports.close = function (url) {
 	delete conns[url];
 };
 
-function connected(conn, name, callback, enablePublishCallback) {
+function connected(conn, name, callback) {
 	console.log("connected to", name, "on", conn.serverProperties.product);
-	conn.exchange(name + 'Xch', {type: 'fanout', durable: true, autoDelete: false, confirm: enablePublishCallback}, function (exchange) {
 
-		function publish(message, callback) {
-			exchange.publish("msg", message, {mandatory: true, deliveryMode: 2}, callback);
+	conn.exchange(name + 'Xch', {type: 'fanout', durable: true, autoDelete: false}, function (exchange) {
+
+		function publish(message, cb) {
+			exchange.publish("msg", message, {mandatory: true, deliveryMode: 2});
 		}
 
 		function subscribeToWorkQueue(callback, fetchCount) {
@@ -66,7 +69,6 @@ function connected(conn, name, callback, enablePublishCallback) {
 				});
 			});
 		}
-
 
 		callback({
 			publish: publish,

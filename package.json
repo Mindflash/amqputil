@@ -4,7 +4,7 @@
 	"description":"A thin wrapper around the amqp node moddule",
 	"main":"index.js",
 	"dependencies":{
-		"amqp":"~0.1.4"
+		"amqp":">= 0.1.4"
 	},
 	"devDependencies":{},
 	"scripts":{

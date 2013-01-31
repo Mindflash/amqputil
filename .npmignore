@@ -2,4 +2,4 @@ tests
 .idea
 *.iml
 *.log
-
+node_modules
