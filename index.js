@@ -11,13 +11,15 @@ var conns = [];
 exports.connect = function (url, name, callback) {
 	var conn = conns[url] = (conns[url] || amqp.createConnection({url: url}));
 
-	if (conn.isReady) {
+	if (conn.isReady)
 		connected(conn, name, callback);
-	} else {
-		conn.addListener('ready', function () {
-			conn.isReady = true;
-			connected(conn, name, callback);
-		});
+	else
+		conn.addListener('ready', readyListener);
+
+	function readyListener() {
+		conn.removeListener('ready', readyListener);
+		conn.isReady = true;
+		connected(conn, name, callback);
 	}
 };
 
@@ -28,9 +30,10 @@ exports.close = function (url) {
 
 function connected(conn, name, callback) {
 	console.log("connected to", name, "on", conn.serverProperties.product);
+
 	conn.exchange(name + 'Xch', {type: 'fanout', durable: true, autoDelete: false}, function (exchange) {
 
-		function publish(message) {
+		function publish(message, cb) {
 			exchange.publish("msg", message, {mandatory: true, deliveryMode: 2});
 		}
 
@@ -66,7 +69,6 @@ function connected(conn, name, callback) {
 				});
 			});
 		}
-
 
 		callback({
 			publish: publish,
