@@ -1,6 +1,6 @@
 {
 	"name":"amqputil",
-	"version":"0.0.2",
+	"version":"0.0.21",
 	"description":"A thin wrapper around the amqp node module",
 	"main":"index.js",
 	"dependencies":{
