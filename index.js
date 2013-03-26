@@ -33,16 +33,16 @@ function connected(conn, name, callback) {
 
 	conn.exchange(name + 'Xch', {type: 'fanout', durable: true, autoDelete: false}, function (exchange) {
 
-		function publish(message, cb) {
+		function publish(message) {
 			exchange.publish("msg", message, {mandatory: true, deliveryMode: 2});
 		}
 
-		function subscribeToWorkQueue(callback, fetchCount) {
+		function subscribeToWorkQueue(cb, fetchCount) {
 			fetchCount = fetchCount || 1;
 			conn.queue(name + 'Q', {durable: true, autoDelete: false}, function (q) {
 				q.bind(exchange, "*");
 				q.subscribe({ ack: true, prefetchCount: fetchCount }, function (json, headers, deliveryInfo, msg) {
-					callback({
+					cb({
 						data: json,
 						headers: headers,
 						deliveryInfo: deliveryInfo,
@@ -54,11 +54,11 @@ function connected(conn, name, callback) {
 			});
 		}
 
-		function subscribeToFanoutQueue(callback) {
+		function subscribeToFanoutQueue(cb) {
 			conn.queue(name + 'Q-' + process.pid + '-' + Math.round(100000 * Math.random()), {durable: false, exclusive: true}, function (q) {
 				q.bind(exchange, "*");
 				q.subscribe({ ack: true }, function (json, headers, deliveryInfo, msg) {
-					callback({
+					cb({
 						data: json,
 						headers: headers,
 						deliveryInfo: deliveryInfo,
