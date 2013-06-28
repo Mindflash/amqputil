@@ -13,8 +13,16 @@ exports.connect = function (url, name, callback) {
 
 	if (conn.isReady)
 		connected(conn, name, callback);
-	else
+	else {
 		conn.addListener('ready', readyListener);
+		conn.addListener('error', function (err) {
+			console.error(err);
+			// This is fairly terrible and will bring down the whole app if uncaught, but it's better than
+			// silently going into a rabbit hole. The only thing more terrible is that pun. :)
+			// We should probably rewrite this and make it an eventEmitter.
+			throw err;
+		});
+	}
 
 	function readyListener() {
 		conn.removeListener('ready', readyListener);
