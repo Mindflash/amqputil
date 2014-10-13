@@ -1,4 +1,4 @@
-"use strict";
+ "use strict";
 var amqp = require('amqp');
 
 var util = require('util');
@@ -43,7 +43,11 @@ function connected(conn, name, callback) {
 	conn.exchange(name + 'Xch', {type: 'fanout', durable: true, autoDelete: false}, function (exchange) {
 
 		function publish(message) {
-			exchange.publish("msg", message, {mandatory: true, deliveryMode: 2});
+			exchange.publish("msg", message, {
+				mandatory: true,
+				deliveryMode: 2,
+				messageId: process.pid + "-" + Date.now()
+			});
 		}
 
 		function subscribeToWorkQueue(cb, fetchCount) {
