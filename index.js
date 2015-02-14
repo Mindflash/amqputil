@@ -1,4 +1,4 @@
-"use strict";
+ "use strict";
 var amqp = require('amqp');
 
 var util = require('util');
@@ -13,8 +13,16 @@ exports.connect = function (url, name, callback) {
 
 	if (conn.isReady)
 		connected(conn, name, callback);
-	else
+	else {
 		conn.addListener('ready', readyListener);
+		conn.addListener('error', function (err) {
+			console.error(err);
+			// This is fairly terrible and will bring down the whole app if uncaught, but it's better than
+			// silently going into a rabbit hole. The only thing more terrible is that pun. :)
+			// We should probably rewrite this and make it an eventEmitter.
+			throw err;
+		});
+	}
 
 	function readyListener() {
 		conn.removeListener('ready', readyListener);
@@ -24,6 +32,7 @@ exports.connect = function (url, name, callback) {
 };
 
 exports.close = function (url) {
+	if(!conns[url]) return;
 	conns[url].end();
 	delete conns[url];
 };
@@ -34,7 +43,11 @@ function connected(conn, name, callback) {
 	conn.exchange(name + 'Xch', {type: 'fanout', durable: true, autoDelete: false}, function (exchange) {
 
 		function publish(message) {
-			exchange.publish("msg", message, {mandatory: true, deliveryMode: 2});
+			exchange.publish("msg", message, {
+				mandatory: true,
+				deliveryMode: 2,
+				messageId: process.pid + "-" + Date.now()
+			});
 		}
 
 		function subscribeToWorkQueue(cb, fetchCount) {
