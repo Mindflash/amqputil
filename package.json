@@ -1,19 +1,19 @@
 {
-	"name":"amqputil",
-	"version":"0.0.21",
-	"description":"A thin wrapper around the amqp node module",
-	"main":"index.js",
-	"dependencies":{
-		"amqp":"~0.1.6"
-	},
-	"devDependencies":{},
-	"scripts":{
-		"test":"echo \"Error: no test specified\" && exit 1"
-	},
-	"repository":{
-		"type":"git",
-		"url":"git@github.com:Mindflash/amqpUtil.git"
-	},
-	"author":"Mindflash",
-	"license":"X11"
+  "name": "amqputil",
+  "version": "0.0.21",
+  "description": "A thin wrapper around the amqp node module",
+  "main": "index.js",
+  "dependencies": {
+    "amqp": "^0.2.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Mindflash/amqpUtil.git"
+  },
+  "author": "Mindflash",
+  "license": "X11"
 }
