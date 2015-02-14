@@ -33,7 +33,7 @@ exports.connect = function (url, name, callback) {
 
 exports.close = function (url) {
 	if(!conns[url]) return;
-	conns[url].disconnect();
+	conns[url].socket.destroy();
 	delete conns[url];
 };
 
