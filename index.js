@@ -1,5 +1,6 @@
  "use strict";
 var amqp = require('amqp');
+var uuid = require('uuid');
 
 var util = require('util');
 var fs = require('fs');
@@ -46,7 +47,7 @@ function connected(conn, name, callback) {
 			exchange.publish("msg", message, {
 				mandatory: true,
 				deliveryMode: 2,
-				messageId: process.pid + "-" + Date.now()
+				messageId: process.pid + "-" + uuid.v4()
 			});
 		}
 
