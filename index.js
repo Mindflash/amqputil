@@ -1,5 +1,6 @@
  "use strict";
 var amqp = require('amqp');
+var uuid = require('uuid');
 
 var util = require('util');
 var fs = require('fs');
@@ -16,7 +17,7 @@ exports.connect = function (url, name, callback) {
 	else {
 		conn.addListener('ready', readyListener);
 		conn.addListener('error', function (err) {
-			console.error(err);
+			console.error('amqp error', err);
 			// This is fairly terrible and will bring down the whole app if uncaught, but it's better than
 			// silently going into a rabbit hole. The only thing more terrible is that pun. :)
 			// We should probably rewrite this and make it an eventEmitter.
@@ -46,7 +47,7 @@ function connected(conn, name, callback) {
 			exchange.publish("msg", message, {
 				mandatory: true,
 				deliveryMode: 2,
-				messageId: process.pid + "-" + Date.now()
+				messageId: process.pid + "-" + uuid.v4()
 			});
 		}
 
