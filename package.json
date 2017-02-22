@@ -4,7 +4,7 @@
   "description":"A thin wrapper around the amqp node module",
   "main":"index.js",
   "dependencies":{
-    "amqp":"~0.1.6",
+    "amqp":"~0.2.6",
     "uuid": "^3.0.1"
   },
   "devDependencies":{},
