@@ -4,9 +4,8 @@ var uuid = require('uuid');
 
 var util = require('util');
 var fs = require('fs');
-function log(msg) {
-	fs.writeSync(1, msg + '\n');
-}
+
+exports.log = console;
 
 var conns = [];
 exports.connect = function (url, name, callback) {
@@ -17,7 +16,7 @@ exports.connect = function (url, name, callback) {
 	else {
 		conn.addListener('ready', readyListener);
 		conn.addListener('error', function (err) {
-			console.error('amqp error', err);
+			exports.log.error('amqp error', err);
 			// This is fairly terrible and will bring down the whole app if uncaught, but it's better than
 			// silently going into a rabbit hole. The only thing more terrible is that pun. :)
 			// We should probably rewrite this and make it an eventEmitter.
@@ -39,7 +38,7 @@ exports.close = function (url) {
 };
 
 function connected(conn, name, callback) {
-	console.log("connected to", name, "on", conn.serverProperties.product);
+	exports.log.info("connected to", name, "on", conn.serverProperties.product);
 
 	conn.exchange(name + 'Xch', {type: 'fanout', durable: true, autoDelete: false}, function (exchange) {
 
