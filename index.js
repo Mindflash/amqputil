@@ -8,11 +8,12 @@ var fs = require('fs');
 exports.log = console;
 
 var conns = [];
-exports.connect = function (url, name, callback) {
-	var conn = conns[url] = (conns[url] || amqp.createConnection({url: url}));
+
+exports.connectEx = function (options, callback) {
+	var conn = conns[options.url] = (conns[options.url] || amqp.createConnection({url: options.url, heartbeat: options.heartbeat}));
 
 	if (conn.isReady)
-		connected(conn, name, callback);
+		connected(conn, options.name, callback);
 	else {
 		conn.addListener('ready', readyListener);
 		conn.addListener('error', function (err) {
@@ -22,13 +23,24 @@ exports.connect = function (url, name, callback) {
 			// We should probably rewrite this and make it an eventEmitter.
 			throw err;
 		});
+		conn.addListener('heartbeat', function () {
+			exports.log.debug('amqp heartbeat');
+		});
 	}
 
 	function readyListener() {
 		conn.removeListener('ready', readyListener);
 		conn.isReady = true;
-		connected(conn, name, callback);
+		connected(conn, options.name, callback);
 	}
+};
+
+ // backward compat connect method
+exports.connect = function (url, name, callback) {
+	return exports.connectEx({
+		url,
+		name
+	}, callback);
 };
 
 exports.close = function (url) {
