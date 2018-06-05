@@ -10,6 +10,7 @@ exports.log = console;
 var conns = [];
 
 exports.connectEx = function (options, callback) {
+	options = options || {};
 	var conn = conns[options.url] = (conns[options.url] || amqp.createConnection({url: options.url, heartbeat: options.heartbeat}));
 
 	if (conn.isReady)
